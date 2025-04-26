@@ -1,8 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import { useRouter } from "next/navigation" // Importar useRouter
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
@@ -15,25 +15,37 @@ import { useToast } from "@/hooks/use-toast"
 export default function LoginPage() {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter() // Inicializar o router
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      // Em um cenário real, chamaríamos a API para autenticar o usuário
-      // const response = await signIn(formData)
+      // Obter os dados do formulário
+      const formData = new FormData(e.currentTarget)
+      const email = formData.get("email")?.toString()
 
       // Simulando uma chamada de API
       await new Promise((resolve) => setTimeout(resolve, 1500))
 
-      toast({
-        title: "Login realizado com sucesso!",
-        description: "Você será redirecionado para o dashboard.",
-      })
-
-      // Redirecionaria para o dashboard
-      // router.push("/dashboard")
+      // Lógica de redirecionamento com base no e-mail
+      if (email === "admin@investor.com") {
+        toast({
+          title: "Login realizado com sucesso!",
+          description: "Redirecionando para o dashboard de investidores.",
+        })
+        router.push("/dashboard/investor")
+      } else if (email === "admin@project.com") {
+        toast({
+          title: "Login realizado com sucesso!",
+          description: "Redirecionando para o dashboard de projetos.",
+        })
+        router.push("/dashboard/project")
+      } else {
+        // Caso o e-mail não seja reconhecido
+        throw new Error("E-mail não autorizado")
+      }
     } catch (error) {
       toast({
         title: "Erro ao fazer login",
